@@ -3,7 +3,8 @@ import { MainService } from './core/main.service';
 import { AppConfig } from '../environments/environment';
 import { BrowserModule, DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
 import {Title} from "@angular/platform-browser";
-import {Subscription, interval, timer} from 'rxjs';
+import { Subscription, interval, timer, fromEvent } from 'rxjs';
+import { takeUntil, pairwise, switchMap, debounceTime, take } from 'rxjs/operators';
 import { ElectronService } from 'ngx-electron';
 
 import { MarcelloOutputs, Category } from "../classes/classes";
@@ -41,8 +42,15 @@ export class AppComponent {
     { id: 3, name: '?', desc: 'votre truc', p: 0 }
   ];
 
+  private cx: CanvasRenderingContext2D;
+  private canvas:HTMLCanvasElement; // px
+  private canvasSize:number = 480; // px
+  public virgin:boolean;
+  public computing:boolean;
+  public history:Array<any>;
+
   @ViewChild('network', {static: false}) networkSvg : ElementRef;
-  @ViewChild('video', {static: false}) videoTag : ElementRef;
+  @ViewChild('canvas', {static: false}) canvasTag: ElementRef;
   constructor(
     private service: MainService,
     public sanitizer:DomSanitizer,
@@ -61,6 +69,10 @@ export class AppComponent {
     this.base = AppConfig.datasServer;
     // this.loadDatas();
     this.startGame()
+  }
+
+  ngAfterContentInit():void
+  {
   }
 
   loadDatas():void
@@ -111,17 +123,83 @@ export class AppComponent {
     this.marcello = new MarcelloOutputs();
     this.marcello.categories = this.categories;
     this.marcello.confidence = 0.35;
-    this.simulateMarcello();
+    this.history = [];
+    this.computing = false;
+    timer(1000).pipe(take(1)).subscribe(() => this.initCanvas());
   }
 
-  simulateMarcello():void
+  initCanvas():void
   {
-    let randomTimer = timer(0, 2000);
+    this.canvas = this.canvasTag.nativeElement;
+    this.cx = this.canvas.getContext('2d');
+
+    // set the width and height
+    this.canvas.width = this.canvasSize;
+    this.canvas.height = this.canvasSize;
+
+    // set some default properties about the line
+    this.cx.lineWidth = 15;
+    this.cx.lineCap = 'round';
+    this.cx.strokeStyle = '#000';
+    this.cx.fillStyle = '#fff';
+
+    this.clean();
+    this.cleanLines();
+    this.captureEvents();
+  }
+
+  captureEvents() {
+    let event = fromEvent(this.canvas, 'mousedown')
+      .pipe(
+        switchMap((e) => {
+          return fromEvent(this.canvas, 'mousemove')
+            .pipe(
+              takeUntil(fromEvent(this.canvas, 'mouseup')),
+              takeUntil(fromEvent(this.canvas, 'mouseleave')),
+              pairwise() // pairwise lets us get the previous value to draw a line from // the previous point to the current point
+            )
+        })
+      );
+
+      event.subscribe((res: [MouseEvent, MouseEvent]) => {
+        const rect = this.canvas.getBoundingClientRect();
+        const prevPos = {
+          x: res[0].clientX - rect.left,
+          y: res[0].clientY - rect.top
+        };
+        const currentPos = {
+          x: res[1].clientX - rect.left,
+          y: res[1].clientY - rect.top
+        };
+        this.drawOnCanvas(prevPos, currentPos);
+      });
+
+      event.pipe(
+        debounceTime(250)
+      ).subscribe(() => {
+        this.changeMarcelloValues(Math.random(), Math.random(), Math.random(), Math.random(), Math.random())
+        this.changeLines();
+      });
+  }
+
+  private drawOnCanvas(
+    prevPos: { x: number, y: number },
+    currentPos: { x: number, y: number }
+  ) {
+    if (!this.cx) { return; }
+    this.cx.beginPath();
+    if (prevPos) {
+      this.cx.moveTo(prevPos.x, prevPos.y); // from
+      this.cx.lineTo(currentPos.x, currentPos.y);
+      this.cx.stroke();
+      this.virgin = false;
+    }
+  }
+
+  changeLines():void
+  {
     let blinkTimer = timer(0, 1000/25);
-    randomTimer.subscribe(() => { // randomize results from marcello
-      this.changeMarcelloValues(Math.random(), Math.random(), Math.random(), Math.random(), Math.random())
-    });
-    blinkTimer.subscribe(() => { // blinking network
+    blinkTimer.pipe(take(1*25)).subscribe(() => { // blinking network
       let lines = this.networkSvg.nativeElement.getElementsByTagName("line");
       for (let i=0; i<lines.length; i++){
         lines.item(i).setAttribute('stroke', 'rgba(239, 64, 35, '+Math.random()+')');
@@ -129,7 +207,16 @@ export class AppComponent {
     });
   }
 
-  changeMarcelloValues(p0:number, p1:number, p2:number, p3:number, confidence:number){
+  cleanLines():void
+  {
+    let lines = this.networkSvg.nativeElement.getElementsByTagName("line");
+    for (let i=0; i<lines.length; i++){
+      lines.item(i).setAttribute('stroke', 'rgba(239, 64, 35, 0.5)');
+    }
+  }
+
+  changeMarcelloValues(p0:number, p1:number, p2:number, p3:number, confidence:number):void
+  {
     this.marcello.categories[0].p = p0;
     this.marcello.categories[1].p = p1;
     this.marcello.categories[2].p = p2;
@@ -139,15 +226,34 @@ export class AppComponent {
 
   clean():void
   {
-    // clean canvas
+    this.cx.rect(0, 0, this.canvasSize, this.canvasSize);
+    this.cx.fill();
+    this.changeMarcelloValues(0, 0, 0, 0, 0);
+    this.virgin = true;
   }
   onMatch():void
   {
-    // Marcello is right !
+    console.log('Marcello is right !');
+    this.sendCanvas();
   }
   onCategory(cat:Category):void
   {
-    // Marcello is wrong...
+    console.log('Marcello is wrong...');
+    this.sendCanvas();
+  }
+
+  sendCanvas():void
+  {
+    console.log('sendCanvas');
+    let dataURL = this.canvas.toDataURL();
+    this.history.push(dataURL);
+
+    this.computing = true;
+    let marcelleObservable = timer(1000).pipe(take(1)); // /!\ replace with real observable on Marcelle
+    marcelleObservable.subscribe(() => {
+      this.clean();
+      this.computing = false;
+    });
   }
 
   /**********************************************************************/

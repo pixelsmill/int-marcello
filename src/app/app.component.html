@@ -1,5 +1,5 @@
 <!-- <router-outlet></router-outlet> -->
-<div id="all" *ngIf="true || datas" (click)="onClick()" [class]="'fullHD roboto step-'+current">
+<div id="all" *ngIf="true || datas" (click)="onClick()" [class]="'fullHD roboto step-'+current" [class.computing]="computing">
 
   <div id="splash" class="page roboto fullHD" *ngIf="current == 'splash'" (click)="onSplashClick()" [style.background]="bgImage">
     <div class="group">
@@ -28,9 +28,9 @@
     </div>
   </div>
 
-  <div id="game" *ngIf="current == 'game'">
-    <div class="marcello">
-      <div class="bg"></div>
+  <div id="game" [class.show]="current == 'game'">
+    <div class="bg"></div>
+    <div class="overlays" *ngIf="current == 'game'">
       <div class="network">
         <svg #network version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
         	 viewBox="0 0 1920 1080" style="enable-background:new 0 0 1920 1080;" xml:space="preserve">
@@ -346,11 +346,6 @@
         <div class="title">Défi n°1</div>
         <div class="text">Apprendre à Marcello à reconnaître un chapeau</div>
       </div>
-      <div class="dessin">
-        <canvas class="canvas"></canvas>
-        <div class="instruction">Dessine un chapeau</div>
-        <a (click)="clean()" class="clean">&times;</a>
-      </div>
       <div class="confidence">
         <ul>
           <li>Très incertain</li>
@@ -390,6 +385,16 @@
           </div>
         </div>
       </div>
+      <div class="history">
+        <ul>
+          <li *ngFor="let img of history"><img [src]="img"></li>
+        </ul>
+      </div>
+    </div>
+    <div class="dessin">
+      <canvas #canvas class="canvas"></canvas>
+      <div class="instruction" *ngIf="virgin">Dessine un chapeau</div>
+      <a (click)="clean()" class="clean">&times;</a>
     </div>
   </div>
 

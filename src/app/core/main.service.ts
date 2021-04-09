@@ -28,24 +28,7 @@ export class MainService {
 
   constructor(
     private httpClient:HttpClient
-  ) {
-    // console.log(AppConfig);
-    //
-    // this.datasName = this.findGetParameter('datas');
-    // console.log("this.datasName", this.datasName);
-
-
-    // si dév > http://localhost:8080/apps/dev/int-marcelle/dist/?datas=bacteries
-    // call http://localhost:8080/apps/datas/bacteries/datas.json
-
-    // si prod > http://localhost:8080/apps/dev/int-marcelle/dist/?datas=bacteries
-    // call http://localhost:8080/apps/datas/bacteries/datas.json
-
-
-    // this.base = 'http://192.168.0.123:80/apps/datas/';
-    // this.base = 'https://expo-intelligence.org/apps/datas/';
-    // this.base = '../../../datas/';
-  }
+  ) { }
 
   public loadDatasName(): Observable<any> {
     let rnd = Math.round(9999999999999*Math.random());
