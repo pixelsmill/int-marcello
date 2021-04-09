@@ -233,12 +233,13 @@ export class AppComponent {
   onMatch():void
   {
     console.log('Marcello is right !');
-    this.save(true);
+    let cat = this.marcello.best();
+    this.save(true, cat);
   }
   onCategory(cat:Category):void
   {
     console.log('Marcello is wrong...');
-    this.save(false);
+    this.save(false, cat);
   }
 
   compute():void
@@ -251,8 +252,10 @@ export class AppComponent {
     });
   }
 
-  save(success:boolean):void
+  save(success:boolean, cat:Category):void
   {
+    console.log(success, cat);
+    
     let dataURL = this.canvas.toDataURL();
     this.history.push(dataURL);
 
