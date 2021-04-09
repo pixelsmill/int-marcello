@@ -46,7 +46,7 @@ export class AppComponent {
   private canvas:HTMLCanvasElement; // px
   private canvasSize:number = 480; // px
   public virgin:boolean;
-  public computing:boolean;
+  public saving:boolean;
   public history:Array<any>;
 
   @ViewChild('network', {static: false}) networkSvg : ElementRef;
@@ -124,7 +124,7 @@ export class AppComponent {
     this.marcello.categories = this.categories;
     this.marcello.confidence = 0.35;
     this.history = [];
-    this.computing = false;
+    this.saving = false;
     timer(1000).pipe(take(1)).subscribe(() => this.initCanvas());
   }
 
@@ -177,8 +177,7 @@ export class AppComponent {
       event.pipe(
         debounceTime(250)
       ).subscribe(() => {
-        this.changeMarcelloValues(Math.random(), Math.random(), Math.random(), Math.random(), Math.random())
-        this.changeLines();
+        this.compute();
       });
   }
 
@@ -234,25 +233,34 @@ export class AppComponent {
   onMatch():void
   {
     console.log('Marcello is right !');
-    this.sendCanvas();
+    this.save(true);
   }
   onCategory(cat:Category):void
   {
     console.log('Marcello is wrong...');
-    this.sendCanvas();
+    this.save(false);
   }
 
-  sendCanvas():void
+  compute():void
   {
-    console.log('sendCanvas');
+    let dataURL = this.canvas.toDataURL();
+    let marcelleObservable = timer(200).pipe(take(1)); // /!\ replace with real observable on Marcelle
+    marcelleObservable.subscribe(() => {
+      this.changeMarcelloValues(Math.random(), Math.random(), Math.random(), Math.random(), Math.random())
+      this.changeLines();
+    });
+  }
+
+  save(success:boolean):void
+  {
     let dataURL = this.canvas.toDataURL();
     this.history.push(dataURL);
 
-    this.computing = true;
+    this.saving = true;
     let marcelleObservable = timer(1000).pipe(take(1)); // /!\ replace with real observable on Marcelle
     marcelleObservable.subscribe(() => {
       this.clean();
-      this.computing = false;
+      this.saving = false;
     });
   }
 
