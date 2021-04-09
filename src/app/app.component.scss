@@ -1,0 +1,429 @@
+:host {
+}
+.suburban {
+  font-family: 'SuburbanOT';
+}
+.roboto {
+  font-family: 'Roboto';
+  font-weight: 500;
+}
+* {
+  box-sizing: border-box;
+}
+
+#all {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: black;
+}
+
+.full {
+  width: 100%;
+  height: 100%;
+}
+.fullHD {
+  width: 1920px;
+  height: 1080px;
+}
+.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
+.hide {
+  display: none !important;
+}
+.show {
+  display: block !important;
+}
+.show-inline-block {
+  display: inline-block !important;
+}
+.show-inline {
+  display: inline !important;
+}
+
+
+
+
+
+#splash {
+  // transition: all 1s;
+  // transition-delay: 0.3s;
+  // opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 12;
+}
+#splash.show {
+  // opacity: 1;
+}
+
+
+
+/************************/
+
+#splash {
+}
+.group {
+  position: absolute;
+  top: calc(50% - 340px);
+  right: 0;
+  left: 0;
+}
+#splash .title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 255px;
+  font-size: 60px;
+  text-align: center;
+  z-index: 10;
+}
+#splash .title span {
+  background-color: lightgrey;
+  color: white;
+  font-weight: bold;
+  padding: 23px 30px;
+  // opacity: 0.5;
+}
+#splash .baseline {
+  position: absolute;
+  left: 50%;
+  top: 310px;
+  width: 700px;
+  margin-left: -350px;
+  text-align: center;
+  font-size: 32px;
+  background-color: white;
+  color: #535353;
+  // opacity: 0.5;
+  padding: 50px 15px 35px 15px;
+  z-index: 5;
+}
+#splash .picto {
+  display: block;
+  position: absolute;
+  bottom: -54px;
+  left: 50%;
+  width: 72px;
+  height: 72px;
+  margin-left: -36px;
+  // border-radius: 50%;
+  background-color: lightgrey;
+  // mix-blend-mode: screen;
+  color: white;
+  text-align: center;
+  padding-top: 1.1em;
+  font-size: 17px;
+  font-weight: 100;
+}
+.picto svg {
+  display: inline-block;
+  width: 2em;
+  height: 2em;
+}
+
+
+
+#video {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.progressBar {
+  width: 100%;
+  height: 10px;
+  position: absolute;
+  right: 0;
+  top: 1070px;
+  left: 0;
+  background-color: black;
+}
+.progressingBar {
+  width: 0%;
+  height: 10px;
+  background-color: white;
+  // transition: all 2s;
+}
+ #debug {
+   position: absolute;
+   top: 0;
+   left: 0;
+   background-color: rgba(0, 0, 0, 0.5);
+   color: white;
+ }
+
+.homeBtn {
+  width: 60px;
+  height: 60px;
+  padding: 10px;
+  // background-color: #ee4991;
+  color: white;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+}
+.homeBtn svg {
+  display: block;
+  width: 40px;
+  height: 40px;
+  transform: scale(0.7);
+}
+
+
+
+
+* {
+  box-sizing: border-box;
+  user-select: none;
+}
+.bg {
+  width: 1920px;
+  height: 1080px;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: url(../assets/-_bg.svg);
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+.network {
+  width: 1920px;
+  height: 1080px;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.intro {
+  position: absolute;
+  left: 79px;
+  top: 44px;
+  width: 490px;
+  height: 151px;
+  padding: 30px;
+  color: white;
+  text-align: center;
+  /* border: solid 1px #333333;
+  background-color: #333333; */
+}
+.intro .title {
+  font-size: 24px;
+}
+.intro .text {
+  font-size: 34px;
+}
+.dessin {
+  position: absolute;
+  left: 79px;
+  top: 295px;
+  width: 490px;
+  height: 490px;
+  color: #333333;
+  text-align: center;
+  padding: 5px;
+  /* border: solid 1px #333333; */
+  /* background-color: #eeeeee; */
+}
+.dessin canvas {
+  width: 480px;
+  height: 480px;
+  border: none;
+}
+.dessin .instruction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  font-size: 34px;
+  width: 100%;
+  height: 100%;
+  border: none;
+  color: #666666;
+}
+.dessin .clean {
+  display: block;
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 50%;
+  margin-left: -20px;
+  background-color: #333333;
+  border: none;
+  text-decoration: none;
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+}
+.confidence {
+  position: absolute;
+  top: 200px;
+  left: 1280px;
+  width: 330px;
+  height: 180px;
+  /* border: solid 1px black; */
+}
+.confidence ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.confidence li {
+  position: absolute;
+  width: 50px;
+  text-align: center;
+}
+.confidence li:nth-child(1) {
+  top: 86px;
+  left: 14px;
+}
+.confidence li:nth-child(2) {
+  top: 25px;
+  left: 81px;
+}
+.confidence li:nth-child(3) {
+  top: 36px;
+  left: 185px;
+}
+.confidence li:nth-child(4) {
+  top: 97px;
+  left: 254px;
+}
+.confidence .needle {
+  display: block;
+  width: 85px;
+  height: 9px;
+  background-image: url(../assets/needle.svg);
+  background-repeat: no-repeat;
+  background-position: center center;
+  position: absolute;
+  left: 95px;
+  top: 147px;
+  transform-origin: 85% 50%;
+  transform: rotate(70deg);
+  transition: transform 1s;
+}
+.categories {
+  position: absolute;
+  top: 433px;
+  left: 1348px;
+  width: 200px;
+}
+.categories ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.categories li {
+  width: 100%;
+  height: 34px;
+  line-height: 34px;
+  margin-bottom: 25px;
+  background-color: white;
+  border: solid 1px #333;
+  position: relative;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.categories li .label {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  text-align: left;
+  padding: 0 10px;
+}
+.categories li .progress {
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #ef4023;
+  overflow: hidden;
+  transition: width 1s;
+}
+.categories li .progress .label {
+  color: white;
+}
+.result {
+  position: absolute;
+  top: 405px;
+  left: 1597px;
+  width: 244px;
+  height: 270px;
+  color: white;
+}
+.inner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  text-align: center;
+  pointer-events: none;
+  overflow: hidden;
+  transition: all 0.5s;
+}
+.feedback {
+  position: absolute;
+  top: 724px;
+  left: 1597px;
+  width: 244px;
+  height: 270px;
+  font-size: 14px;
+  color: #333;
+}
+.feedback .inner {
+  padding: 30px;
+}
+.feedback .title {
+  font-size: 20px;
+}
+.feedback .instruction {
+  font-size: 14px;
+}
+.feedback ul {
+  list-style-type: none;
+  display: block;
+  margin: 0 0 0 0;
+  padding: 0;
+}
+.feedback ul li {
+  font-size: 14px;
+  margin: 0 5px;
+  display: inline-block;
+}
+.feedback ul li a {
+  display: inline-block;
+  height: 35px;
+  line-height: 35px;
+  padding: 0 10px;
+  // border: solid 1px #ef4023;
+  background-color: #ef4023;
+  color: white;
+  font-weight: bold;
+}

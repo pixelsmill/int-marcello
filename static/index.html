@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>int-marcelle</title>
+  <base href="./">  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    html, body {
+      width: 1920px;
+      height: 1080px;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #e2dddb;
+    }
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+    .bg {
+      width: 1920px;
+      height: 1080px;
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-image: url(../src/assets/-_bg.svg);
+      background-repeat: no-repeat;
+      background-position: 0 0;
+    }
+    .network {
+      width: 1920px;
+      height: 1080px;
+      margin: 0;
+      padding: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .intro {
+      position: absolute;
+      left: 79px;
+      top: 44px;
+      width: 490px;
+      height: 151px;
+      padding: 30px;
+      color: white;
+      text-align: center;
+      /* border: solid 1px #333333;
+      background-color: #333333; */
+    }
+    .intro .title {
+      font-size: 24px;
+    }
+    .intro .text {
+      font-size: 34px;
+    }
+    .dessin {
+      position: absolute;
+      left: 79px;
+      top: 295px;
+      width: 490px;
+      height: 490px;
+      color: #333333;
+      text-align: center;
+      padding: 5px;
+      /* border: solid 1px #333333; */
+      /* background-color: #eeeeee; */
+    }
+    .dessin canvas {
+      width: 480px;
+      height: 480px;
+      border: none;
+    }
+    .dessin .instruction {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      font-size: 34px;
+      width: 100%;
+      height: 100%;
+      border: none;
+      color: #666666;
+    }
+    .dessin .clear {
+      display: block;
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      border-radius: 50%;
+      margin-left: -20px;
+      background-color: #333333;
+      border: none;
+      text-decoration: none;
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+    }
+    .confidence {
+      position: absolute;
+      top: 200px;
+      left: 1280px;
+      width: 330px;
+      height: 180px;
+      /* border: solid 1px black; */
+    }
+    .confidence ul {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+    .confidence li {
+      position: absolute;
+      width: 50px;
+      text-align: center;
+    }
+    .confidence li:nth-child(1) {
+      top: 86px;
+      left: 14px;
+    }
+    .confidence li:nth-child(2) {
+      top: 25px;
+      left: 81px;
+    }
+    .confidence li:nth-child(3) {
+      top: 36px;
+      left: 185px;
+    }
+    .confidence li:nth-child(4) {
+      top: 97px;
+      left: 254px;
+    }
+    .confidence .needle {
+      display: block;
+      width: 85px;
+      height: 9px;
+      background-image: url(../src/assets/needle.svg);
+      background-repeat: no-repeat;
+      background-position: center center;
+      position: absolute;
+      left: 95px;
+      top: 147px;
+      transform-origin: 85% 50%;
+      transform: rotate(70deg);
+      transition: transform 1s;
+    }
+    .categories {
+      position: absolute;
+      top: 433px;
+      left: 1348px;
+      width: 200px;
+    }
+    .categories ul {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+    .categories li {
+      width: 100%;
+      height: 34px;
+      line-height: 34px;
+      margin-bottom: 25px;
+      background-color: white;
+      border: solid 1px #333;
+      position: relative;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+    .categories li .label {
+      display: block;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      text-align: left;
+      padding: 0 10px;
+    }
+    .categories li .progress {
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      background-color: #ef4023;
+      overflow: hidden;
+      transition: width 1s;
+    }
+    .categories li .progress .label {
+      color: white;
+    }
+    .result {
+      position: absolute;
+      top: 405px;
+      left: 1597px;
+      width: 244px;
+      height: 270px;
+      color: white;
+    }
+    .inner {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      text-align: center;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .feedback {
+      position: absolute;
+      top: 724px;
+      left: 1597px;
+      width: 244px;
+      height: 270px;
+      font-size: 14px;
+      color: #333;
+    }
+    .feedback .title {
+      font-size: 20px;
+    }
+    .feedback .instruction {
+      font-size: 14px;
+    }
+    .feedback ul {
+      list-style-type: none;
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+    .feedback ul li {
+      font-size: 14px;
+      margin: 0 5px;
+      display: inline-block;
+    }
+    .feedback ul li a {
+      display: inline-block;
+      height: 35px;
+      line-height: 35px;
+      padding: 0 10px;
+      border: solid 1px #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="marcello">
+    <div class="bg"></div>
+    <div class="network">
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+      	 viewBox="0 0 1920 1080" style="enable-background:new 0 0 1920 1080;" xml:space="preserve">
+      <style type="text/css">
+      	.st0{fill:#E2DDDB;}
+      	.st1{fill:#FFFFFF;stroke:#333333;stroke-miterlimit:10;}
+      	.st2{fill:#FFFFFF;}
+      	.st3{fill:none;stroke:#333333;stroke-miterlimit:10;}
+      	.st4{fill:#333333;}
+      	.st5{fill:#FFFFFF;stroke:#333333;stroke-width:11;stroke-miterlimit:10;}
+      	.st6{fill:#EF4023;stroke:#333333;stroke-miterlimit:10;}
+      	.st7{fill:#F2594E;stroke:#333333;stroke-miterlimit:10;}
+      	.st8{fill:#F2BDB6;stroke:#333333;stroke-miterlimit:10;}
+      	.st9{fill:#F28577;stroke:#333333;stroke-miterlimit:10;}
+      	.st10{fill:#3F3F3F;}
+      	.st11{fill:#333333;stroke:#333333;stroke-miterlimit:10;}
+      	.st12{fill:#E2DDDB;stroke:#333333;stroke-miterlimit:10;}
+      	.st13{fill:#EF4023;}
+      	.st14{opacity:0.7;fill:#333333;}
+      	.st15{fill-rule:evenodd;clip-rule:evenodd;fill:#EF4023;}
+      	.st16{fill-rule:evenodd;clip-rule:evenodd;fill:#FFFFFF;}
+      </style>
+      <g id="Calque_1">
+      	<g>
+      		<g>
+      			<g>
+      				<line class="st1" x1="630.88" y1="332.67" x2="959.88" y2="245"/>
+      				<line class="st1" x1="959.88" y1="304" x2="630.88" y2="332.67"/>
+      				<line class="st1" x1="959.88" y1="363" x2="630.88" y2="332.67"/>
+      				<line class="st1" x1="959.88" y1="422" x2="630.88" y2="332.67"/>
+      				<line class="st1" x1="959.88" y1="481" x2="630.88" y2="332.67"/>
+      				<line class="st1" x1="630.88" y1="332.67" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="599" x2="630.88" y2="332.67"/>
+      				<line class="st1" x1="959.88" y1="658" x2="630.88" y2="332.67"/>
+      				<line class="st1" x1="959.88" y1="717" x2="630.88" y2="332.67"/>
+      				<line class="st1" x1="959.88" y1="776" x2="630.88" y2="332.67"/>
+      				<line class="st1" x1="959.88" y1="835" x2="630.88" y2="332.67"/>
+      			</g>
+      			<g>
+      				<line class="st1" x1="1282.88" y1="451.17" x2="959.88" y2="245"/>
+      				<line class="st1" x1="959.88" y1="304" x2="1282.88" y2="451.17"/>
+      				<line class="st1" x1="959.88" y1="363" x2="1282.88" y2="451.17"/>
+      				<line class="st1" x1="959.88" y1="422" x2="1282.88" y2="451.17"/>
+      				<line class="st1" x1="959.88" y1="481" x2="1282.88" y2="451.17"/>
+      				<line class="st1" x1="1282.88" y1="451.17" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="599" x2="1282.88" y2="451.17"/>
+      				<line class="st1" x1="959.88" y1="658" x2="1282.88" y2="451.17"/>
+      				<line class="st1" x1="959.88" y1="717" x2="1282.88" y2="451.17"/>
+      				<line class="st1" x1="959.88" y1="776" x2="1282.88" y2="451.17"/>
+      				<line class="st1" x1="959.88" y1="835" x2="1282.88" y2="451.17"/>
+      			</g>
+      			<g>
+      				<line class="st1" x1="1282.88" y1="628.17" x2="959.88" y2="835"/>
+      				<line class="st1" x1="959.88" y1="776" x2="1282.88" y2="628.17"/>
+      				<line class="st1" x1="959.88" y1="717" x2="1282.88" y2="628.17"/>
+      				<line class="st1" x1="959.88" y1="658" x2="1282.88" y2="628.17"/>
+      				<line class="st1" x1="959.88" y1="599" x2="1282.88" y2="628.17"/>
+      				<line class="st1" x1="1282.88" y1="628.17" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="481" x2="1282.88" y2="628.17"/>
+      				<line class="st1" x1="959.88" y1="422" x2="1282.88" y2="628.17"/>
+      				<line class="st1" x1="959.88" y1="363" x2="1282.88" y2="628.17"/>
+      				<line class="st1" x1="959.88" y1="304" x2="1282.88" y2="628.17"/>
+      				<line class="st1" x1="959.88" y1="245" x2="1282.88" y2="628.17"/>
+      			</g>
+      			<g>
+      				<line class="st1" x1="1282.88" y1="569.17" x2="959.88" y2="835"/>
+      				<line class="st1" x1="959.88" y1="776" x2="1282.88" y2="569.17"/>
+      				<line class="st1" x1="959.88" y1="717" x2="1282.88" y2="569.17"/>
+      				<line class="st1" x1="959.88" y1="658" x2="1282.88" y2="569.17"/>
+      				<line class="st1" x1="959.88" y1="599" x2="1282.88" y2="569.17"/>
+      				<line class="st1" x1="1282.88" y1="569.17" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="481" x2="1282.88" y2="569.17"/>
+      				<line class="st1" x1="959.88" y1="422" x2="1282.88" y2="569.17"/>
+      				<line class="st1" x1="959.88" y1="363" x2="1282.88" y2="569.17"/>
+      				<line class="st1" x1="959.88" y1="304" x2="1282.88" y2="569.17"/>
+      				<line class="st1" x1="959.88" y1="245" x2="1282.88" y2="569.17"/>
+      			</g>
+      			<g>
+      				<line class="st1" x1="1282.88" y1="510.17" x2="959.88" y2="245"/>
+      				<line class="st1" x1="959.88" y1="304" x2="1282.88" y2="510.17"/>
+      				<line class="st1" x1="959.88" y1="363" x2="1282.88" y2="510.17"/>
+      				<line class="st1" x1="959.88" y1="422" x2="1282.88" y2="510.17"/>
+      				<line class="st1" x1="959.88" y1="481" x2="1282.88" y2="510.17"/>
+      				<line class="st1" x1="1282.88" y1="510.17" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="599" x2="1282.88" y2="510.17"/>
+      				<line class="st1" x1="959.88" y1="658" x2="1282.88" y2="510.17"/>
+      				<line class="st1" x1="959.88" y1="717" x2="1282.88" y2="510.17"/>
+      				<line class="st1" x1="959.88" y1="776" x2="1282.88" y2="510.17"/>
+      				<line class="st1" x1="959.88" y1="835" x2="1282.88" y2="510.17"/>
+      			</g>
+      			<g>
+      				<line class="st1" x1="630.88" y1="391.67" x2="959.88" y2="245"/>
+      				<line class="st1" x1="959.88" y1="304" x2="630.88" y2="391.67"/>
+      				<line class="st1" x1="959.88" y1="363" x2="630.88" y2="391.67"/>
+      				<line class="st1" x1="959.88" y1="422" x2="630.88" y2="391.67"/>
+      				<line class="st1" x1="959.88" y1="481" x2="630.88" y2="391.67"/>
+      				<line class="st1" x1="630.88" y1="391.67" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="599" x2="630.88" y2="391.67"/>
+      				<line class="st1" x1="959.88" y1="658" x2="630.88" y2="391.67"/>
+      				<line class="st1" x1="959.88" y1="717" x2="630.88" y2="391.67"/>
+      				<line class="st1" x1="959.88" y1="776" x2="630.88" y2="391.67"/>
+      				<line class="st1" x1="959.88" y1="835" x2="630.88" y2="391.67"/>
+      			</g>
+      			<g>
+      				<line class="st1" x1="630.88" y1="450.67" x2="959.88" y2="245"/>
+      				<line class="st1" x1="959.88" y1="304" x2="630.88" y2="450.67"/>
+      				<line class="st1" x1="959.88" y1="363" x2="630.88" y2="450.67"/>
+      				<line class="st1" x1="959.88" y1="422" x2="630.88" y2="450.67"/>
+      				<line class="st1" x1="959.88" y1="481" x2="630.88" y2="450.67"/>
+      				<line class="st1" x1="630.88" y1="450.67" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="599" x2="630.88" y2="450.67"/>
+      				<line class="st1" x1="959.88" y1="658" x2="630.88" y2="450.67"/>
+      				<line class="st1" x1="959.88" y1="717" x2="630.88" y2="450.67"/>
+      				<line class="st1" x1="959.88" y1="776" x2="630.88" y2="450.67"/>
+      				<line class="st1" x1="959.88" y1="835" x2="630.88" y2="450.67"/>
+      			</g>
+      			<g>
+      				<line class="st1" x1="633.88" y1="509.67" x2="959.88" y2="245"/>
+      				<line class="st1" x1="959.88" y1="304" x2="633.88" y2="509.67"/>
+      				<line class="st1" x1="959.88" y1="363" x2="633.88" y2="509.67"/>
+      				<line class="st1" x1="959.88" y1="422" x2="633.88" y2="509.67"/>
+      				<line class="st1" x1="959.88" y1="481" x2="633.88" y2="509.67"/>
+      				<line class="st1" x1="633.88" y1="509.67" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="599" x2="633.88" y2="509.67"/>
+      				<line class="st1" x1="959.88" y1="658" x2="633.88" y2="509.67"/>
+      				<line class="st1" x1="959.88" y1="717" x2="633.88" y2="509.67"/>
+      				<line class="st1" x1="959.88" y1="776" x2="633.88" y2="509.67"/>
+      				<line class="st1" x1="959.88" y1="835" x2="633.88" y2="509.67"/>
+      			</g>
+      			<g>
+      				<line class="st1" x1="630.88" y1="746.67" x2="959.88" y2="835"/>
+      				<line class="st1" x1="959.88" y1="776" x2="630.88" y2="746.67"/>
+      				<line class="st1" x1="959.88" y1="717" x2="630.88" y2="746.67"/>
+      				<line class="st1" x1="959.88" y1="658" x2="630.88" y2="746.67"/>
+      				<line class="st1" x1="959.88" y1="599" x2="630.88" y2="746.67"/>
+      				<line class="st1" x1="630.88" y1="746.67" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="481" x2="630.88" y2="746.67"/>
+      				<line class="st1" x1="959.88" y1="422" x2="630.88" y2="746.67"/>
+      				<line class="st1" x1="959.88" y1="363" x2="630.88" y2="746.67"/>
+      				<line class="st1" x1="959.88" y1="304" x2="630.88" y2="746.67"/>
+      				<line class="st1" x1="959.88" y1="245" x2="630.88" y2="746.67"/>
+      			</g>
+      			<g>
+      				<line class="st1" x1="630.88" y1="687.67" x2="959.88" y2="835"/>
+      				<line class="st1" x1="959.88" y1="776" x2="630.88" y2="687.67"/>
+      				<line class="st1" x1="959.88" y1="717" x2="630.88" y2="687.67"/>
+      				<line class="st1" x1="959.88" y1="658" x2="630.88" y2="687.67"/>
+      				<line class="st1" x1="959.88" y1="599" x2="630.88" y2="687.67"/>
+      				<line class="st1" x1="630.88" y1="687.67" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="481" x2="630.88" y2="687.67"/>
+      				<line class="st1" x1="959.88" y1="422" x2="630.88" y2="687.67"/>
+      				<line class="st1" x1="959.88" y1="363" x2="630.88" y2="687.67"/>
+      				<line class="st1" x1="959.88" y1="304" x2="630.88" y2="687.67"/>
+      				<line class="st1" x1="959.88" y1="245" x2="630.88" y2="687.67"/>
+      			</g>
+      			<g>
+      				<line class="st1" x1="630.88" y1="628.67" x2="959.88" y2="835"/>
+      				<line class="st1" x1="959.88" y1="776" x2="630.88" y2="628.67"/>
+      				<line class="st1" x1="959.88" y1="717" x2="630.88" y2="628.67"/>
+      				<line class="st1" x1="959.88" y1="658" x2="630.88" y2="628.67"/>
+      				<line class="st1" x1="959.88" y1="599" x2="630.88" y2="628.67"/>
+      				<line class="st1" x1="630.88" y1="628.67" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="481" x2="630.88" y2="628.67"/>
+      				<line class="st1" x1="959.88" y1="422" x2="630.88" y2="628.67"/>
+      				<line class="st1" x1="959.88" y1="363" x2="630.88" y2="628.67"/>
+      				<line class="st1" x1="959.88" y1="304" x2="630.88" y2="628.67"/>
+      				<line class="st1" x1="959.88" y1="245" x2="630.88" y2="628.67"/>
+      			</g>
+      			<g>
+      				<line class="st1" x1="633.88" y1="569.67" x2="959.88" y2="835"/>
+      				<line class="st1" x1="959.88" y1="776" x2="633.88" y2="569.67"/>
+      				<line class="st1" x1="959.88" y1="717" x2="633.88" y2="569.67"/>
+      				<line class="st1" x1="959.88" y1="658" x2="633.88" y2="569.67"/>
+      				<line class="st1" x1="959.88" y1="599" x2="633.88" y2="569.67"/>
+      				<line class="st1" x1="633.88" y1="569.67" x2="959.88" y2="540"/>
+      				<line class="st1" x1="959.88" y1="481" x2="633.88" y2="569.67"/>
+      				<line class="st1" x1="959.88" y1="422" x2="633.88" y2="569.67"/>
+      				<line class="st1" x1="959.88" y1="363" x2="633.88" y2="569.67"/>
+      				<line class="st1" x1="959.88" y1="304" x2="633.88" y2="569.67"/>
+      				<line class="st1" x1="959.88" y1="245" x2="633.88" y2="569.67"/>
+      			</g>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="601.22" y1="333" x2="568.3" y2="333"/>
+      				<g>
+      					<polygon class="st4" points="608.28,333 598.33,328.93 600.69,333 598.33,337.06 					"/>
+      				</g>
+      			</g>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="601.22" y1="392" x2="568.3" y2="392"/>
+      				<g>
+      					<polygon class="st4" points="608.28,392 598.33,387.93 600.69,392 598.33,396.06 					"/>
+      				</g>
+      			</g>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="601.22" y1="451" x2="568.3" y2="451"/>
+      				<g>
+      					<polygon class="st4" points="608.28,451 598.33,446.93 600.69,451 598.33,455.06 					"/>
+      				</g>
+      			</g>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="601.22" y1="510" x2="568.3" y2="510"/>
+      				<g>
+      					<polygon class="st4" points="608.28,510 598.33,505.93 600.69,510 598.33,514.06 					"/>
+      				</g>
+      			</g>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="601.22" y1="569" x2="568.3" y2="569"/>
+      				<g>
+      					<polygon class="st4" points="608.28,569 598.33,564.93 600.69,569 598.33,573.06 					"/>
+      				</g>
+      			</g>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="601.22" y1="628" x2="568.3" y2="628"/>
+      				<g>
+      					<polygon class="st4" points="608.28,628 598.33,623.93 600.69,628 598.33,632.06 					"/>
+      				</g>
+      			</g>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="601.22" y1="687" x2="568.3" y2="687"/>
+      				<g>
+      					<polygon class="st4" points="608.28,687 598.33,682.93 600.69,687 598.33,691.06 					"/>
+      				</g>
+      			</g>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="601.22" y1="746" x2="568.3" y2="746"/>
+      				<g>
+      					<polygon class="st4" points="608.28,746 598.33,741.93 600.69,746 598.33,750.06 					"/>
+      				</g>
+      			</g>
+      		</g>
+      		<g>
+      			<circle class="st5" cx="630.88" cy="333" r="17"/>
+      			<circle class="st5" cx="630.88" cy="392" r="17"/>
+      			<circle class="st5" cx="630.88" cy="451" r="17"/>
+      			<circle class="st5" cx="630.88" cy="510" r="17"/>
+      			<circle class="st5" cx="630.88" cy="569" r="17"/>
+      			<circle class="st5" cx="630.88" cy="628" r="17"/>
+      			<circle class="st5" cx="630.88" cy="687" r="17"/>
+      			<circle class="st5" cx="630.88" cy="746" r="17"/>
+      		</g>
+      		<g>
+      			<circle class="st5" cx="959.88" cy="244.83" r="17"/>
+      			<circle class="st5" cx="959.88" cy="303.83" r="17"/>
+      			<circle class="st5" cx="959.88" cy="362.83" r="17"/>
+      			<circle class="st5" cx="959.88" cy="421.83" r="17"/>
+      			<circle class="st5" cx="959.88" cy="480.83" r="17"/>
+      			<circle class="st5" cx="959.88" cy="539.83" r="17"/>
+      			<circle class="st5" cx="959.88" cy="598.83" r="17"/>
+      			<circle class="st5" cx="959.88" cy="657.83" r="17"/>
+      			<circle class="st5" cx="959.88" cy="716.83" r="17"/>
+      			<circle class="st5" cx="959.88" cy="775.83" r="17"/>
+      			<circle class="st5" cx="959.88" cy="834.83" r="17"/>
+      		</g>
+      		<g>
+      			<circle class="st5" cx="1282.88" cy="451" r="17"/>
+      			<circle class="st5" cx="1282.88" cy="510" r="17"/>
+      			<circle class="st5" cx="1282.88" cy="569" r="17"/>
+      			<circle class="st5" cx="1282.88" cy="628" r="17"/>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="1305.15" y1="451.17" x2="1589.68" y2="451.17"/>
+      				<g>
+      					<polygon class="st4" points="1596.74,451.17 1586.79,455.23 1589.15,451.17 1586.79,447.1 					"/>
+      				</g>
+      			</g>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="1305.15" y1="510.25" x2="1589.68" y2="510.25"/>
+      				<g>
+      					<polygon class="st4" points="1596.74,510.25 1586.79,514.32 1589.15,510.25 1586.79,506.19 					"/>
+      				</g>
+      			</g>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="1305.15" y1="569.33" x2="1589.68" y2="569.33"/>
+      				<g>
+      					<polygon class="st4" points="1596.74,569.33 1586.79,573.4 1589.15,569.33 1586.79,565.27 					"/>
+      				</g>
+      			</g>
+      		</g>
+      		<g>
+      			<g>
+      				<line class="st3" x1="1305.15" y1="628.42" x2="1589.68" y2="628.42"/>
+      				<g>
+      					<polygon class="st4" points="1596.74,628.42 1586.79,632.48 1589.15,628.42 1586.79,624.35 					"/>
+      				</g>
+      			</g>
+      		</g>
+      	</g>
+      </g>
+      <g id="Calque_2">
+      </g>
+      <g id="Calque_3">
+      </g>
+      </svg>
+    </div>
+    <div class="intro">
+      <div class="title">Défi n°1</div>
+      <div class="text">Apprendre à Marcello à reconnaître un chapeau</div>
+    </div>
+    <div class="dessin">
+      <canvas class="canvas"></canvas>
+      <div class="instruction">Dessine un chapeau</div>
+      <a href="#" class="clear">&times;</a>
+    </div>
+    <div class="confidence">
+      <ul>
+        <li>Très incertain</li>
+        <li>Peu confiant</li>
+        <li>Incertain</li>
+        <li>Confiant</li>
+      </ul>
+      <div class="needle"></div>
+    </div>
+    <div class="categories">
+      <ul>
+        <li><span class="label">Chapeau</span><span class="progress" style="width: 0%;"><span class="label">Chapeau</span></span></li>
+        <li><span class="label">Lune</span><span class="progress" style="width: 25%;"><span class="label">Lune</span></span></li>
+        <li><span class="label">Fromage</span><span class="progress" style="width: 75%;"><span class="label">Fromage</span></span></li>
+        <li><span class="label">?</span><span class="progress" style="width: 100%;"><span class="label">?</span></span></li>
+      </ul>
+    </div>
+    <div class="result" style="background-color: #ef4023;">
+      <div class="inner">
+        Vous avez
+        dessiné un
+        chapeau
+      </div>
+    </div>
+    <div class="feedback">
+      <div class="inner">
+        <div class="center">
+          <div class="title">Feedback</div>
+          <div class="instruction">Le dessin est terminé et Marcello l’a reconnu ?</div>
+          <ul>
+            <li><a (click)="">Chapeau</a></li>
+            <li><a (click)="">Lune</a></li>
+            <li><a (click)="">Fromage</a></li>
+            <li><a (click)="">Mystère</a></li>
+          </ul>
+          <div class="instruction">Le dessin est terminé et Marcello l’a reconnu ?</div>
+          <ul>
+            <li><a (click)="">Chapeau</a></li>
+            <li><a (click)="">Lune</a></li>
+            <li><a (click)="">Fromage</a></li>
+            <li><a (click)="">Mystère</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
