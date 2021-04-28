@@ -8,6 +8,7 @@ import { takeUntil, pairwise, switchMap, debounceTime, take } from 'rxjs/operato
 import { ElectronService } from 'ngx-electron';
 
 import { MarcelloOutputs, Category } from "../classes/classes";
+import { addToDataset, predict, setup } from '../marcelle';
 
 @Component({
   selector: 'app-root',
@@ -68,6 +69,7 @@ export class AppComponent {
     }
     this.base = AppConfig.datasServer;
     // this.loadDatas();
+    setup(this.categories);
     this.startGame()
   }
 
@@ -214,50 +216,60 @@ export class AppComponent {
     }
   }
 
-  changeMarcelloValues(p0:number, p1:number, p2:number, p3:number, confidence:number):void
+  changeMarcelloValues(confidences: Record<string, number>, certainty:number):void
   {
-    this.marcello.categories[0].p = p0;
-    this.marcello.categories[1].p = p1;
-    this.marcello.categories[2].p = p2;
-    this.marcello.categories[3].p = p3;
-    this.marcello.confidence = confidence;
+    for (const [label, conf] of Object.entries(confidences)) {
+      const idx = this.marcello.categories.map(({ name }) => name).indexOf(label);
+      this.marcello.categories[idx].p = conf;
+    }
+    this.marcello.confidence = certainty;
   }
 
   clean():void
   {
     this.cx.rect(0, 0, this.canvasSize, this.canvasSize);
     this.cx.fill();
-    this.changeMarcelloValues(0, 0, 0, 0, 0);
+    this.changeMarcelloValues(
+      this.categories.reduce((x, { name }) => ({ ...x, [name]: 0 }), {}),
+      0,
+    );
     this.virgin = true;
   }
+
   onMatch():void
   {
     console.log('Marcello is right !');
     let cat = this.marcello.best();
     this.save(true, cat);
   }
+
   onCategory(cat:Category):void
   {
     console.log('Marcello is wrong...');
     this.save(false, cat);
   }
 
-  compute():void
+  getImage(): ImageData {
+    return this.cx.getImageData(0, 0, this.canvas.width, this.canvas.height)
+  }
+
+  async compute(): Promise<void>
   {
-    let dataURL = this.canvas.toDataURL();
-    let marcelleObservable = timer(200).pipe(take(1)); // /!\ replace with real observable on Marcelle
-    marcelleObservable.subscribe(() => {
-      this.changeMarcelloValues(Math.random(), Math.random(), Math.random(), Math.random(), Math.random())
-      this.changeLines();
-    });
+    const imgData = this.getImage();
+    const { confidences, certainty } = await predict(imgData)
+    this.changeMarcelloValues(confidences, certainty);
+    this.changeLines();
   }
 
   save(success:boolean, cat:Category):void
   {
     console.log(success, cat);
-    
+
     let dataURL = this.canvas.toDataURL();
     this.history.push(dataURL);
+
+    const imgData = this.getImage();
+    addToDataset(imgData, cat.name);
 
     this.saving = true;
     let marcelleObservable = timer(1000).pipe(take(1)); // /!\ replace with real observable on Marcelle
