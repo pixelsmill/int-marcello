@@ -21,7 +21,7 @@
     "@angular/platform-browser": "~9.1.11",
     "@angular/platform-browser-dynamic": "~9.1.11",
     "@angular/router": "~9.1.11",
-    "@marcellejs/core": "^0.3.1",
+    "@marcellejs/core": "0.3.2",
     "hammerjs": "^2.0.8",
     "ngx-electron": "^2.2.0",
     "proj4": "^2.6.3",

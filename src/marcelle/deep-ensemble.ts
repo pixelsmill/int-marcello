@@ -100,9 +100,7 @@ export interface MLPOptions extends TFJSModelOptions {
 export class DeepEnsemble extends TFJSModel<TensorLike, ClassifierResults> {
   title = 'DeepEnsemble';
 
-  model: Sequential;
   models: Sequential[];
-  loadFn = loadLayersModel;
 
   parameters: {
     numModels: Stream<number>;
