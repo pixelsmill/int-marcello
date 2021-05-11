@@ -7,7 +7,11 @@ export class MarcelloOutputs {
   }
   public best():Category {
     if (!this.categories.length) return;
-    return [...this.categories].sort((a, b) => b.p - a.p)[0];
+    let best = [...this.categories].sort((a, b) => b.p - a.p)[0];
+    if (best.p == 0){
+      best = undefined;
+    }
+    return best;
   }
 }
 export class Category {
@@ -15,4 +19,8 @@ export class Category {
   public name:string;
   public desc:string;
   public p:number;
+  public lastMatch: Match;
+}
+export class Match {
+  constructor(public correct:boolean, public confidence:number){ }
 }

@@ -2,5 +2,6 @@ export const AppConfig = {
   name: "local",
   production: false,
   environment: 'LOCAL',
-  datasServer: '../../../datas/'
+  datasServer: './assets/datas/'
 };
+// datasServer: '../../../datas/'

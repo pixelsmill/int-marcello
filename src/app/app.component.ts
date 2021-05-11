@@ -7,7 +7,7 @@ import { Subscription, interval, timer, fromEvent } from 'rxjs';
 import { takeUntil, pairwise, switchMap, debounceTime, take } from 'rxjs/operators';
 import { ElectronService } from 'ngx-electron';
 
-import { MarcelloOutputs, Category } from "../classes/classes";
+import { MarcelloOutputs, Category, Match } from "../classes/classes";
 import { addToDataset, predict, setup } from '../marcelle';
 
 @Component({
@@ -37,18 +37,27 @@ export class AppComponent {
   public marcello:MarcelloOutputs;
   public labels:Array<string> = ['Chapeau', 'Lune', 'Fromage', '?'];
   public categories:Array<Category> = [
-    { id: 0, name: 'Chapeau', desc: 'un chapeau', p: 0 },
-    { id: 1, name: 'Lune', desc: 'une lune', p: 0 },
-    { id: 2, name: 'Fromage', desc: 'un fromage', p: 0 },
-    { id: 3, name: '?', desc: 'votre truc', p: 0 }
+    { id: 0, name: 'Chapeau', desc: 'un chapeau', p: 0, lastMatch: undefined },
+    { id: 1, name: 'Lune', desc: 'une lune', p: 0, lastMatch: undefined },
+    { id: 2, name: 'Fromage', desc: 'un fromage', p: 0, lastMatch: undefined },
+    { id: 3, name: 'Mystère...', desc: 'votre secret', p: 0, lastMatch: undefined }
   ];
 
   private cx: CanvasRenderingContext2D;
   private canvas:HTMLCanvasElement; // px
   private canvasSize:number = 480; // px
   public virgin:boolean;
-  public saving:boolean;
+  public wrong:boolean = false;
   public history:Array<any>;
+
+  public helperShown;
+
+  public step: number; // 0, 1, 2
+
+  public marcellaText: string;
+  public marcellaMuted: boolean;
+  public marcelloLearned:boolean;
+  public readyForNextStep:boolean;
 
   @ViewChild('network', {static: false}) networkSvg : ElementRef;
   @ViewChild('canvas', {static: false}) canvasTag: ElementRef;
@@ -68,9 +77,8 @@ export class AppComponent {
       this.datasName = this.findGetParameter('datas');
     }
     this.base = AppConfig.datasServer;
-    // this.loadDatas();
+    this.loadDatas();
     setup(this.categories);
-    this.startGame()
   }
 
   ngAfterContentInit():void
@@ -80,13 +88,15 @@ export class AppComponent {
   loadDatas():void
   {
     this.current = 'loading';
-    this.service.loadDatasDev(this.datasName).subscribe((datas => {
-      this.datasdev = datas;
+    // this.service.loadDatasDev(this.datasName).subscribe((datas => {
+    //   this.datasdev = datas;
       this.service.loadDatas(this.datasName).subscribe((datas => {
         this.datas = datas;
+        console.log(datas);
         this.titleService.setTitle( this.datas.name );
+        this.start();
       }));
-    }));
+    // }));
   }
 
   onClick():void // listen to user event to prevent auto reset after long unactivity
@@ -106,10 +116,17 @@ export class AppComponent {
     this.goHome();
   }
 
+  clear(){
+    this.marcellaMuted = true;
+    this.step = 0;
+  }
+
   goHome():void // go to splash screen
   {
+    this.clear();
     this.current = 'splash';
   }
+
 
   onSplashClick():void // click splash screen
   {
@@ -126,8 +143,12 @@ export class AppComponent {
     this.marcello.categories = this.categories;
     this.marcello.confidence = 0.35;
     this.history = [];
-    this.saving = false;
-    timer(1000).pipe(take(1)).subscribe(() => this.initCanvas());
+    this.marcelloLearned = false;
+    this.readyForNextStep = false;
+    timer(1000).pipe(take(1)).subscribe(() => {
+      this.initCanvas();
+      this.goMarcella();
+    });
   }
 
   initCanvas():void
@@ -180,6 +201,9 @@ export class AppComponent {
         debounceTime(250)
       ).subscribe(() => {
         this.compute();
+
+
+
       });
   }
 
@@ -204,6 +228,16 @@ export class AppComponent {
       let lines = this.networkSvg.nativeElement.getElementsByTagName("line");
       for (let i=0; i<lines.length; i++){
         lines.item(i).setAttribute('stroke', 'rgba(239, 64, 35, '+Math.random()+')');
+      }
+    });
+  }
+  changeLinesWidth():void
+  {
+    let blinkTimer = timer(0, 1000/25);
+    blinkTimer.pipe(take(1*25)).subscribe(() => { // blinking network
+      let lines = this.networkSvg.nativeElement.getElementsByTagName("line");
+      for (let i=0; i<lines.length; i++){
+        lines.item(i).setAttribute('stroke-width', 1+2*Math.random())+'px';
       }
     });
   }
@@ -236,16 +270,18 @@ export class AppComponent {
     this.virgin = true;
   }
 
-  onMatch():void
+  onMatch(bool:boolean):void
   {
-    console.log('Marcello is right !');
-    let cat = this.marcello.best();
-    this.save(true, cat);
+    if (bool){
+      let cat = this.marcello.best();
+      this.save(true, cat);
+    } else {
+      this.wrong = true;
+    }
   }
 
   onCategory(cat:Category):void
   {
-    console.log('Marcello is wrong...');
     this.save(false, cat);
   }
 
@@ -257,26 +293,151 @@ export class AppComponent {
   {
     const imgData = this.getImage();
     const { confidences, certainty } = await predict(imgData)
+    this.wrong = false;
     this.changeMarcelloValues(confidences, certainty);
     this.changeLines();
   }
 
-  save(success:boolean, cat:Category):void
+  save(success:boolean, category:Category):void
   {
-    console.log(success, cat);
+    let cat = this.categories.find((cat) => cat.id == category.id);
+    if (success){
+      cat.lastMatch = new Match(success, this.marcello.confidence);
+    }
 
     let dataURL = this.canvas.toDataURL();
     this.history.push(dataURL);
 
     const imgData = this.getImage();
-    addToDataset(imgData, cat.name);
+    addToDataset(imgData, category.name);
 
-    this.saving = true;
-    let marcelleObservable = timer(1000).pipe(take(1)); // /!\ replace with real observable on Marcelle
-    marcelleObservable.subscribe(() => {
-      this.clean();
-      this.saving = false;
-    });
+    this.marcelloLearned = true;
+    this.goMarcella(success, category);
+
+  }
+
+  goMarcella(success:boolean = false, category:Category = undefined):void {
+    let best = this.marcello.best();
+    if (this.step == 0){
+      if (!best){
+        // t0_0
+        this.marcellaSay("Nous allons commencer par apprendre à Marcello à reconnaitre un chapeau. Marcello va tenter de deviner, dites-lui s'il s'est trompé ou pas.");
+      } else if (best.id != 0){
+        // t0_1
+        this.marcellaSay('Votre chapeau n\'a pas été reconnu, mais l\'erreur va être prise en compte par Marcello. Recommencez !');
+      } else if (best.id == 0 && this.marcello.confidence < 0.75){
+        // t0_2
+        this.marcellaSay('Votre chapeau a été reconnu, mais la confiance est encore faible. Marcello va progresser. Recommencez !');
+      } else {
+        // t0_3
+        this.marcellaSay('Votre chapeau a été reconnu avec une confiance suffisante.');
+        this.readyForNextStep = true;
+      }
+    } else if (this.step == 1){
+      if (!best){
+        // t1_0
+        this.marcellaSay("Apprenez-lui à reconnaître une lune et un fromage.");
+      } else if (best.id == 0){
+        // t1_1
+        this.marcellaSay("Marcello a tendance à voir des chapeau partout, puisque jusqu'ici, c'était tjs des chapeaux. Recommencez à dessiner une lune ou un fromage.");
+      } else if (!success){
+        // t1_2
+        this.marcellaSay("Il va falloir insister un peu. Recommencez à dessiner une lune ou un fromage.");
+      } else if (best.id == 3){
+        // t1_3
+        this.marcellaSay("Il va falloir insister un peu. Recommencez à dessiner une lune ou un fromage.");
+      } else {
+        if (this.marcello.confidence < 0.75){
+          if (best.id == 1){
+            // t1_4
+            this.marcellaSay('Votre lune a été reconnu, mais la confiance est encore faible. Marcello progresse. Recommencez !');
+          } else if (best.id == 2){
+            // t1_5
+            this.marcellaSay('Votre fromage a été reconnu, mais la confiance est encore faible. Marcello progresse. Recommencez !');
+          }
+        } else {
+          let matches = this.categories.filter((category) => (category.id == 1 || category.id == 2) && category.lastMatch && category.lastMatch.correct && category.lastMatch.confidence > 0.75);
+          if (matches.length == 2){
+            // t1_6
+            this.marcellaSay('Bravo, vous avez bien appris à Marcello à reconnaitre la lune et un fromage en plus du chapeau.');
+            this.readyForNextStep = true;
+          } else if (best.id == 1){
+            // t1_7
+            this.marcellaSay('Vous avez bien appris à Marcello à reconnaître la lune, faites-en autant avec le fromage.');
+          } else if (best.id == 2){
+            // t1_8
+            this.marcellaSay('Vous avez bien appris à Marcello à reconnaître la lune, faites-en autant avec le fromage.');
+          }
+        }
+      }
+    } else if (this.step == 2){
+      if (!best){
+        // t2_0
+        this.marcellaSay("Ultime étape, fermez les yeux et pensez à quelque chose sans le dire à personne, ce sera votre objet mystére. Puis apprennez à Marcello ce nouvel objet.");
+      } else if (!success){
+        // t2_1
+        this.marcellaSay("Marcello a tendance à voir des chapeaux, des lunes et des fromages partout.");
+      } else if (this.marcello.confidence < 0.75){
+        // t2_2
+        this.marcellaSay("Marcello l'a bien reconnu mais sa confiance est encore trop faible. Redessinez votre objet mystère.");
+      } else {
+        // t2_3
+        this.marcellaSay("Marcello l'a bien reconnu et sa confiance est bonne. Redessinez votre objet mystère.");
+        this.readyForNextStep = true;
+      }
+    } else if (this.step == 3){
+      // t3_0
+      if (!best){
+        this.marcellaSay("Ca y est, vous avez tout appris à Marcello. Vous êtes libre de poursuivre. Marcello est-il capable de reconnaitres d'autres types de chapeaux ? Haut-de-formes et casquettes ? Peut-t-on finir par le tromper en lui donnant de fausse indication ?");
+      }
+    }
+  }
+
+  onOkMarcella():void
+  {
+    this.marcellaMute();
+    if (this.marcelloLearned){
+      let marcelleObservable = timer(1000).pipe(take(1)); // /!\ replace with real observable on Marcelle
+      marcelleObservable.subscribe(() => {
+        this.changeLinesWidth();
+        this.clean();
+        this.nextStepIfReady();
+      });
+    } else {
+      this.nextStepIfReady();
+    }
+  }
+
+  nextStepIfReady(){
+    if (this.readyForNextStep){
+      this.readyForNextStep = false;
+      this.step += 1;
+      this.goMarcella();
+    }
+  }
+
+  onAllo():void
+  {
+    this.marcelloLearned = false;
+    this.marcellaMuted = false;
+  }
+
+  marcellaSay(text:string):void
+  {
+    this.marcellaText = text;
+    this.marcellaMuted = false;
+  }
+  marcellaMute():void
+  {
+    this.marcellaMuted = true;
+  }
+  showHelper(helper):void
+  {
+    this.helperShown = helper;
+  }
+  hideHelper():void
+  {
+    delete this.helperShown;
   }
 
   /**********************************************************************/

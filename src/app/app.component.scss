@@ -19,10 +19,6 @@
   left: 0;
   background-color: black;
 }
-#all.saving {
-  opacity: 0.5;
-  pointer-events: none;
-}
 
 .full {
   width: 100%;
@@ -138,7 +134,7 @@
   width: 60px;
   height: 60px;
   padding: 10px;
-  // background-color: #ee4991;
+  // background-color: #ef4023;
   color: white;
   position: absolute;
   top: 30px;
@@ -187,7 +183,7 @@
   top: 44px;
   width: 490px;
   height: 151px;
-  padding: 30px;
+  padding: 20px 30px;
   color: white;
   text-align: center;
   /* border: solid 1px #333333;
@@ -198,6 +194,7 @@
 }
 .intro .text {
   font-size: 34px;
+  line-height: 1em;
 }
 .dessin {
   position: absolute;
@@ -229,7 +226,7 @@
   width: 100%;
   height: 100%;
   border: none;
-  color: #666666;
+  color: #E2DDDB;
   pointer-events: none;
 }
 .dessin .clean {
@@ -261,6 +258,7 @@
   margin: 0;
   padding: 0;
   list-style-type: none;
+  line-height: 1em;
 }
 .confidence li {
   position: absolute;
@@ -372,28 +370,33 @@
   left: 1597px;
   width: 244px;
   height: 270px;
-  font-size: 14px;
   color: #333;
 }
 .feedback .inner {
   padding: 30px;
+  font-size: 24px;
+  line-height: 1em;
 }
 .feedback .title {
-  font-size: 20px;
+  // font-size: 20px;
 }
 .feedback .instruction {
-  font-size: 14px;
+  // font-size: 14px;
 }
 .feedback ul {
   list-style-type: none;
   display: block;
-  margin: 0 0 0 0;
+  margin: 15px 0 0 0;
   padding: 0;
 }
 .feedback ul li {
-  font-size: 14px;
+  // font-size: 14px;
   margin: 0 5px;
   display: inline-block;
+}
+.feedback .inner.wrong ul li {
+  display: block;
+  margin: 5px 0;
 }
 .feedback ul li a {
   display: inline-block;
@@ -432,4 +435,195 @@
   display: block;
   width: 100px;
   height: 100px;
+}
+
+
+.helpers {
+  .helper {
+    position: absolute;
+    .toggle {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      margin-top: -20px;
+      margin-left: -20px;
+      background-color: #ef4023;
+      color: white;
+      font-weight: bold;
+      font-size: 24px;
+      border-radius: 50%;
+    }
+    .more {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 350px;
+      margin-top: -20px;
+      margin-left: -20px;
+      margin-right: -20px;
+      margin-bottom: -20px;
+      background-color: #ef4023;
+      color: white;
+      border-radius: 20px;
+      padding: 40px 20px 40px 20px;
+      box-shadow: 1px 1px 15px 3px rgba(0, 0, 0, 0.22);
+      font-size: 24px;
+      z-index: 999;
+      .close {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        font-size: 32px;
+      }
+      .title {
+        font-size: 24px;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      .description {
+        font-size: 18px;
+        font-weight: normal;
+      }
+    }
+  }
+  .helper.right .more {
+    left: auto;
+    right: 0;
+    .close {
+      left: auto;
+      right: 0;
+    }
+  }
+  .helper.bottom .more {
+    top: auto;
+    bottom: 0;
+    .close {
+      top: auto;
+      bottom: 0;
+    }
+  }
+
+}
+
+
+.marcella {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  .avatar {
+    position: absolute;
+    bottom: 33px;
+    left: 94px;
+    background-image: url(../assets/images/marcella.png);
+    background-repeat: no-repeat;
+    width: 405px;
+    height: 385px;
+    transition: all 1s;
+  }
+  .bubble {
+    position: absolute;
+    left: 275px;
+    bottom: 100px;
+    width: 1061px;
+    min-height: 316px;
+    .bubble_top {
+      background-image: url(../assets/images/bubble_top.png);
+      background-repeat: no-repeat;
+      width: 1061px;
+      height: 98px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    .bubble_bottom {
+      background-image: url(../assets/images/bubble_bottom.png);
+      background-repeat: no-repeat;
+      width: 1061px;
+      height: 208px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+    .bubble_center {
+      background-image: url(../assets/images/bubble_center.png);
+      background-repeat: repeat-y;
+      position: absolute;
+      top: 98px;
+      right: 0;
+      bottom: 208px;
+      left: 0;
+      width: 1061px;
+    }
+    .table {
+      display: table;
+      position: relative;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding: 25px 45px 25px 154px;
+      min-height: 316px;
+      .cell {
+        display: table-cell;
+        padding: 45px;
+        vertical-align: middle;
+        font-size: 28px;
+        position: relative;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        p {
+          margin: 10px 0;
+        }
+      }
+    }
+    .btn {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      text-align: center;
+      a {
+        background-color: #ef4023;
+        color: white;
+        padding: 5px 15px;
+      }
+    }
+  }
+  .allo {
+    display: none;
+  }
+  &.off {
+    top: auto;
+    right: auto;
+    .bubble {
+      display: none;
+    }
+    .avatar {
+      bottom: -240px;
+      left: -240px;
+    }
+    .allo {
+      display: block;
+      position: absolute;
+      left: 255px;
+      bottom: 255px;
+      background-color: #ef4023;
+      color: white;
+      padding: 5px 15px;
+      font-size: 28px;
+    }
+  }
 }

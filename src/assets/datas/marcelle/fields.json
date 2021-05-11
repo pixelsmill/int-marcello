@@ -1,0 +1,107 @@
+{
+  "type": "object",
+  "required": [
+    "name"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Nom de l'appli"
+    },
+    "image": {
+      "type": "media",
+      "title": "Image accueil",
+      "widget": {
+        "formlyConfig": {
+          "type": "media",
+          "templateOptions": {
+            "width": 1920,
+            "height": 1080
+          }
+        }
+      }
+    },
+    "title": {
+      "type": "string",
+      "title": "Titre"
+    },
+    "baseline": {
+      "type": "string",
+      "title": "Sous-titre"
+    },
+    "defis": {
+      "title": "Défis",
+      "type": "array",
+      "items": {
+        "title": "Défi",
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Titre du défi"
+          },
+          "description": {
+            "type": "richtext",
+            "title": "Consigne du défi"
+          },
+          "instruction": {
+            "type": "string",
+            "title": "Consigne de dessin"
+          },
+          "button": {
+            "type": "string",
+            "title": "Texte du bouton"
+          },
+          "conclusion": {
+            "type": "richtext",
+            "title": "Conclusion du défi"
+          }
+        }
+      }
+    },
+    "helpers": {
+      "title": "Infos",
+      "type": "array",
+      "items": {
+        "title": "Info",
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Titre du défi"
+          },
+          "description": {
+            "type": "richtext",
+            "title": "Consigne du défi"
+          },
+          "left": {
+            "type": "number",
+            "title": "left"
+          },
+          "top": {
+            "type": "number",
+            "title": "top"
+          }
+        }
+      }
+    },
+    "mystery_category": {
+      "type": "string",
+      "title": "Nom de la catégorie mystère"
+    },
+    "conclusion": {
+      "title": "Conclusion",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "title": "Titre"
+        },
+        "description": {
+          "type": "richtext",
+          "title": "Titre"
+        }
+      }
+    }
+  }
+}

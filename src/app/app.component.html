@@ -1,5 +1,5 @@
 <!-- <router-outlet></router-outlet> -->
-<div id="all" *ngIf="true || datas" (click)="onClick()" [class]="'fullHD roboto step-'+current" [class.saving]="saving">
+<div id="all" *ngIf="true || datas" (click)="onClick()" [class]="'fullHD roboto step-'+current">
 
   <div id="splash" class="page roboto fullHD" *ngIf="current == 'splash'" (click)="onSplashClick()" [style.background]="bgImage">
     <div class="group">
@@ -342,10 +342,10 @@
         </g>
         </svg>
       </div>
-      <div class="intro">
+      <!-- <div class="intro">
         <div class="title">Défi n°1</div>
-        <div class="text">Apprendre à Marcello à reconnaître un chapeau</div>
-      </div>
+        <div class="text">Apprendre à Marcello les bases</div>
+      </div> -->
       <div class="confidence">
         <ul>
           <li>Très incertain</li>
@@ -366,19 +366,23 @@
         </ul>
       </div>
       <div class="result" [style.backgroundColor]="'rgba(239, 64, 35, 1)'" *ngIf="marcello.best()">
-        <div class="inner" [style.backgroundColor]="'rgba(255, 255, 255, '+0.5*(1-marcello.confidence)+')'" [innerHTML]="'Vous avez dessiné<br>'+marcello.best().desc+'&nbsp; !'"></div>
+        <div class="inner" [style.backgroundColor]="'rgba(255, 255, 255, '+0.5*(1-marcello.confidence)+')'" [innerHTML]="'Ceci est<br>'+marcello.best().desc+'&nbsp; !'" *ngIf="marcello.best()"></div>
       </div>
-      <div class="feedback">
-        <div class="inner">
+      <div class="feedback" *ngIf="marcello.best() != undefined">
+        <div class="inner" *ngIf="!wrong">
           <div class="center">
             <!-- <div class="title">Feedback</div> -->
-            <div class="instruction">Le dessin est terminé et le reconnaisance a fonctionné ?</div>
+            <div class="instruction">C'est bien ça ?</div>
             <ul>
-              <li><a (click)="onMatch()" [innerHTML]="'Oui'"></a></li>
-              <!-- <li><a (click)="onCategory()" [innerHTML]="'Non'"></a></li> -->
+              <li><a (click)="onMatch(true)" [innerHTML]="'Oui'"></a></li>
+              <li><a (click)="onMatch(false)" [innerHTML]="'Non'"></a></li>
             </ul>
+          </div>
+        </div>
+        <div class="inner wrong" *ngIf="wrong">
+          <div class="center">
             <br>
-            <div class="instruction">Sinon, de quoi s’agissait-il ?</div>
+            <div class="instruction">Alors, de quoi s’agit-il ?</div>
             <ul>
               <li *ngFor="let cat of marcello.categories"><a (click)="onCategory(cat)" [innerHTML]="cat.name"></a></li>
             </ul>
@@ -393,9 +397,37 @@
     </div>
     <div class="dessin">
       <canvas #canvas class="canvas"></canvas>
-      <div class="instruction" *ngIf="virgin">Dessine un chapeau</div>
+      <div class="instruction" *ngIf="virgin">Zone<br>de dessin</div>
       <a (click)="clean()" class="clean">&times;</a>
     </div>
+    <div class="helpers">
+      <div class="helper" *ngFor="let helper of datas?.helpers" [class.right]="helper.left > 1500" [class.bottom]="helper.top > 540" [style.left]="helper.left+'px'" [style.top]="helper.top+'px'">
+        <a class="toggle" (click)="showHelper(helper)">?</a>
+        <div class="more" *ngIf="helper == helperShown">
+          <div class="title" [innerHTML]="helper.title"></div>
+          <div class="description" [innerHTML]="helper.description"></div>
+          <a (click)="hideHelper()" class="close">&times;</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="marcella" [class.off]="!marcellaText || marcellaMuted">
+      <div class="avatar">
+        <div class="bubble">
+          <div class="bubble_top"></div>
+          <div class="bubble_center"></div>
+          <div class="bubble_bottom"></div>
+          <div class="table">
+            <div class="cell">
+              <div [innerHTML]="marcellaText"></div>
+              <div class="btn"><a (click)="onOkMarcella()" [innerHTML]="'Ok'"></a></div>
+            </div>
+          </div>
+        </div>
+        <div (click)="onAllo()" class="allo" [innerHTML]="'Allo ?'"></div>
+      </div>
+    </div>
+
   </div>
 
 </div>
