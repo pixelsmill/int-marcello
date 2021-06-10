@@ -6,6 +6,7 @@ const featureExtractor = mobilenet();
 const store = dataStore({ location: 'localStorage' });
 const trainingSet = dataset({ name: 'training-set', dataStore: store });
 let classifier = new DeepEnsemble({ dataStore: store }) // .sync('main-mlp');
+classifier.$training.subscribe(console.log)
 
 // // == DEBUG START
 // // to debug, add to index.html:
@@ -42,7 +43,11 @@ export async function addToDataset(img: ImageData, label: string) {
 trainingSet.$changes.subscribe(async (changes) => {
   for (const { level, type } of changes) {
     if (['instance', 'dataset'].includes(level) && type === 'created') {
-      classifier.train(trainingSet, categories);
+      try {
+        classifier.train(trainingSet, categories);
+      } catch (error) {
+        console.log('Training error', error)
+      }
     }
   }
 })
@@ -53,3 +58,9 @@ export async function predict(img: ImageData) {
   const preds = await classifier.predict(features);
   return preds;
 }
+
+export async function reset() {
+  await trainingSet.clear();
+  classifier.train(trainingSet, categories);
+}
+
