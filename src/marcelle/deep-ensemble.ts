@@ -131,7 +131,10 @@ export class DeepEnsemble extends TFJSModel<TensorLike, ClassifierResults> {
       this.$training.set({ status: 'error' });
       throw new Error('Cannot train a MLP with less than 2 classes');
     }
-    this.$training.set({ status: 'start', epochs: this.parameters.epochs.value });
+    this.$training.set({
+      status: 'start',
+      epochs: dataset.$count.value > 1 ? this.parameters.epochs.value : 1,
+    });
     setTimeout(async () => {
       if (dataset.$count.value>1) {
         const data = await dataSplit(dataset, 0.75, this.labels);
@@ -139,6 +142,7 @@ export class DeepEnsemble extends TFJSModel<TensorLike, ClassifierResults> {
         this.fit(data);
       } else {
         this.buildModel(1024, this.labels.length);
+        this.$training.set({ status: 'success', epochs: 1 });
       }
     }, 100);
   }
@@ -221,7 +225,8 @@ export class DeepEnsemble extends TFJSModel<TensorLike, ClassifierResults> {
 
   fit(data: TrainingData, epochs = -1): void {
     const numEpochs = epochs > 0 ? epochs : this.parameters.epochs.value;
-    const $trainingStreams = []
+    const $trainingStreams = [];
+    let modelsToTrain = this.models.length;
     for (const model of this.models) {
       const $thisModelTraining = new Stream<TrainingStatus>({ status: 'start', epochs: numEpochs });
       $thisModelTraining.start();
@@ -268,10 +273,13 @@ export class DeepEnsemble extends TFJSModel<TensorLike, ClassifierResults> {
           throw new Error(error.message);
         })
         .finally(() => {
-          data.training_x.dispose();
-          data.training_y.dispose();
-          data.validation_x.dispose();
-          data.validation_y.dispose();
+          modelsToTrain -= 1;
+          if (modelsToTrain === 0) {
+            data.training_x.dispose();
+            data.training_y.dispose();
+            data.validation_x.dispose();
+            data.validation_y.dispose();
+          }
         });
     }
     const $combinedTraining = $trainingStreams.slice(1).reduce(($final, $x) => {
